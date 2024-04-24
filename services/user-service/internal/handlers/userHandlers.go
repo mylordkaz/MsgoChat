@@ -45,11 +45,15 @@ func CreateUser(w http.ResponseWriter, r *http.Request){
 func GetUser(w http.ResponseWriter, r *http.Request){
 	vars := mux.Vars(r)
 	id := vars["id"]
-	user := models.User{UserID: "1", Name: "kevin", Email: "kevinv@gmail.com"} // fake data
+	var user models.User
 
-	if id == "1"{
-		json.NewEncoder(w).Encode(user)
+	err := db.QueryRow("SELECT * FROM users WHERE id = $1", id).Scan(&user.IDToken)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
 	}
+
+	json.NewEncoder(w).Encode(user)
 }
 func UpdateUser(w http.ResponseWriter, r *http.Request){
 
