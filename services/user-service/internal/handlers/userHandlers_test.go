@@ -78,3 +78,42 @@ func TestGetUser(t *testing.T) {
     assert.Equal(t, user.NickName, returnedUser.NickName, "Nickname should match")
     assert.Equal(t, user.IDToken, returnedUser.IDToken, "IDToken should match")
 }
+func TestUpdateUser(t *testing.T){
+	mockDB, mock, err := sqlmock.New()
+    if err != nil {
+        t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+    }
+    defer mockDB.Close()
+    db = mockDB 
+
+    router := mux.NewRouter()
+    router.HandleFunc("/users/{id}", UpdateUser).Methods("PUT")
+
+	updatedUser := models.User{
+		Name: "updatedName",
+		Email: "updated@email.com",
+
+	}
+	updatedUserJSON, _ := json.Marshal(updatedUser)
+
+	request, _ := http.NewRequest("PUT", "/users/1", bytes.NewBuffer(updatedUserJSON))
+	request = mux.SetURLVars(request, map[string]string{"id": "1"})
+	response := httptest.NewRecorder()
+
+	mock.ExpectExec(`UPDATE users SET name = \$1, email = \$2 WHERE id = \$3`).
+	WithArgs(updatedUser.Name, updatedUser.Email, "1").
+	WillReturnResult(sqlmock.NewResult(0, 1))
+
+	router.ServeHTTP(response, request)
+
+	assert.Equal(t, http.StatusOK, response.Code, "Expected 200 code")
+
+	var returnedUser models.User
+	json.NewDecoder(response.Body).Decode(&returnedUser)
+	assert.Equal(t, updatedUser.Name, returnedUser.Name, "Name should match")
+	assert.Equal(t, updatedUser.Email, returnedUser.Email, "Email should match")
+
+	if err := mock.ExpectationsWereMet(); err != nil {
+        t.Errorf("there were unfulfilled expectations: %s", err)
+    }
+}
