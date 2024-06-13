@@ -24,13 +24,13 @@ func TestCreateUser(t *testing.T){
 	router := mux.NewRouter()
 	router.HandleFunc("/users", CreateUser).Methods("POST")
 
-	user := models.User{NickName: "jeanToad", Email: "jeanToad@gmail.com", Password: "JeanToad123@"}
+	user := models.User{Name: "jeanToad", Email: "jeanToad@gmail.com", PasswordHash: "JeanToad123@"}
 	userJSON, _ := json.Marshal(user)
 	request, _ := http.NewRequest("POST", "/users", bytes.NewBuffer(userJSON))
 	response := httptest.NewRecorder()
 
 	mock.ExpectQuery(`INSERT INTO users\(nickname, email, password\) VALUES\(\$1, \$2, \$3\) RETURNING id`).
-	WithArgs(user.NickName, user.Email, sqlmock.AnyArg()).
+	WithArgs(user.Name, user.Email, sqlmock.AnyArg()).
 	WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
 
 	router.ServeHTTP(response, request)
@@ -50,18 +50,19 @@ func TestGetUser(t *testing.T) {
     router := mux.NewRouter()
     router.HandleFunc("/users/{id}", GetUser).Methods("GET")
 
+	accessToken := "access-token"
     user := models.User{
-        NickName: "jeanToad",
+        Name: "jeanToad",
         Email:    "jeanToad@gmail.com",
-        IDToken:  "1",
+        AccessToken:  &accessToken,
     }
 
     mock.ExpectQuery(`SELECT email, nickname, id_token FROM users WHERE id = \$1`).
-        WithArgs(user.IDToken).
+        WithArgs(user.AccessToken).
         WillReturnRows(sqlmock.NewRows([]string{"email", "nickname", "id_token"}).
-            AddRow(user.Email, user.NickName, user.IDToken))
+            AddRow(user.Email, user.AccessToken, user.ID))
 
-    request, _ := http.NewRequest("GET", "/users/"+user.IDToken, nil)
+    request, _ := http.NewRequest("GET", "/users/"+*user.AccessToken, nil)
     response := httptest.NewRecorder()
 
     router.ServeHTTP(response, request)
@@ -75,8 +76,8 @@ func TestGetUser(t *testing.T) {
     json.NewDecoder(response.Body).Decode(&returnedUser)
 
     assert.Equal(t, user.Email, returnedUser.Email, "Email should match")
-    assert.Equal(t, user.NickName, returnedUser.NickName, "Nickname should match")
-    assert.Equal(t, user.IDToken, returnedUser.IDToken, "IDToken should match")
+    assert.Equal(t, user.Name, returnedUser.Name, "Nickname should match")
+    assert.Equal(t, user.AccessToken, returnedUser.AccessToken, "IDToken should match")
 }
 func TestUpdateUser(t *testing.T){
 	mockDB, mock, err := sqlmock.New()

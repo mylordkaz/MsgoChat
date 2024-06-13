@@ -25,15 +25,15 @@ func CreateUser(w http.ResponseWriter, r *http.Request){
         return
     }
 
-	hashedPassword, err := hash.HashPassword(user.Password)
+	hashedPassword, err := hash.HashPassword(user.PasswordHash)
 	if err != nil {
 		http.Error(w, "Error hashing password", http.StatusInternalServerError)
 		return
 	}
-	user.Password = hashedPassword
+	user.PasswordHash = hashedPassword
 
     // Insert user into the database
-    err = db.QueryRow("INSERT INTO users(nickname, email, password) VALUES($1, $2, $3) RETURNING id", user.NickName, user.Email, user.Password).Scan(&user.IDToken)
+    err = db.QueryRow("INSERT INTO users(nickname, email, password) VALUES($1, $2, $3) RETURNING id", user.Name, user.Email, user.PasswordHash).Scan(&user.AccessToken)
     if err != nil {
         http.Error(w, "Error creating user", http.StatusInternalServerError)
         return
@@ -48,7 +48,7 @@ func GetUser(w http.ResponseWriter, r *http.Request){
 	id := vars["id"]
 	var user models.User
 
-	err := db.QueryRow("SELECT email, nickname, id_token FROM users WHERE id = $1", id).Scan(&user.Email, &user.NickName, &user.IDToken)
+	err := db.QueryRow("SELECT email, nickname, id_token FROM users WHERE id = $1", id).Scan(&user.Email, &user.Name, &user.AccessToken)
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
 		return
