@@ -8,8 +8,8 @@ type User struct {
     PasswordHash  string
     GoogleID      *string // Pointer to handle null values
     Name          string
-    AvatarURL     string
-    Provider      string // "google" or "local"
+    AvatarURL     *string
+    Provider      string // example = "google" or "local"
     AccessToken   *string
     RefreshToken  *string
     TokenExpiry   *time.Time
