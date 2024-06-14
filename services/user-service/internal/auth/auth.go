@@ -14,7 +14,7 @@ import (
 const (
 	key = "randomKey"
 	MaxAge = 86400 * 30
-	IsProd = false
+	IsProd = false  // set to true when https 
 )
 
 func NewAuth(){
