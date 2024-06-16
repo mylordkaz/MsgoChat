@@ -53,3 +53,8 @@ func CallbackHandler(w http.ResponseWriter, r *http.Request){
 	}
 	fmt.Fprintf(w, "User: %v", user)
 }
+
+func LogoutHandler(w http.ResponseWriter, r *http.Request){
+	gothic.Logout(w, r)
+	http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+}
