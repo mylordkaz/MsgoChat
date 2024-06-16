@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"net/http"
+	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/mylordkaz/MsgoChat/services/user-service/internal/database"
@@ -31,9 +32,12 @@ func CreateUser(w http.ResponseWriter, r *http.Request){
 		return
 	}
 	user.PasswordHash = hashedPassword
+	user.Provider = "local"
+	user.CreatedAt = time.Now()
+	user.UpdatedAt = time.Now()
 
     // Insert user into the database
-    err = db.QueryRow("INSERT INTO users(nickname, email, password) VALUES($1, $2, $3) RETURNING id", user.Name, user.Email, user.PasswordHash).Scan(&user.AccessToken)
+    err = db.QueryRow("INSERT INTO users(name, email, password, provider, created_at, updated_at) VALUES($1, $2, $3, $4, $5, $6) RETURNING id", user.Name, user.Email, user.PasswordHash).Scan(&user.ID)
     if err != nil {
         http.Error(w, "Error creating user", http.StatusInternalServerError)
         return
