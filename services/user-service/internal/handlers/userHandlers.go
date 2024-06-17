@@ -52,7 +52,7 @@ func GetUser(w http.ResponseWriter, r *http.Request){
 	id := vars["id"]
 	var user models.User
 
-	err := db.QueryRow("SELECT email, nickname, id_token FROM users WHERE id = $1", id).Scan(&user.Email, &user.Name, &user.AccessToken)
+	err := db.QueryRow("SELECT email, name, id FROM users WHERE id = $1", id).Scan(&user.Email, &user.Name, &user.ID)
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
 		return
