@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"time"
@@ -19,6 +20,17 @@ type LoginRequest struct {
 	Email string `json:"email"`
 	Password string `json:"password"`
 }
+
+func RegisterHandler(w http.ResponseWriter, r *http.Request){
+	var req RegisterRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Invalid request", http.StatusBadRequest)
+		return
+	}
+
+	hashedPassword, err :=
+}
+
 
 func AuthHandlers(w http.ResponseWriter, r *http.Request){
 	gothic.BeginAuthHandler(w, r)
