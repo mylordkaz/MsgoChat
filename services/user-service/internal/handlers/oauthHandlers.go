@@ -10,6 +10,16 @@ import (
 	"github.com/mylordkaz/MsgoChat/services/user-service/internal/models"
 )
 
+type RegisterRequest struct{
+	Email 		string `json:"email"`
+	Password 	string `json:"password"`
+	Name 		string `json:"name"`
+}
+type LoginRequest struct {
+	Email string `json:"email"`
+	Password string `json:"password"`
+}
+
 func AuthHandlers(w http.ResponseWriter, r *http.Request){
 	gothic.BeginAuthHandler(w, r)
 }
