@@ -12,7 +12,7 @@ func RegisterRoutes(router *mux.Router){
 	router.HandleFunc("/users/{id}", handlers.DeleteUser).Methods("DELETE")
 }
 func AuthRoutes(router *mux.Router){
-	router.HandleFunc("/register",handlers.RegisterHandler )
+	router.HandleFunc("/register",handlers.RegisterHandler)
 	router.HandleFunc("/login", )
 	router.HandleFunc("/logout", handlers.LogoutHandler )
 	router.HandleFunc("/auth/{provider}/callback", handlers.CallbackHandler)
