@@ -28,7 +28,32 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request){
 		return
 	}
 
-	hashedPassword, err :=
+	hashedPassword, err := utils.hashedPassword(req.Password)
+	if err != nil {
+		http.Error(w, "Error hashing password", http.StatusInternalServerError)
+		return
+	}
+
+	user := models.User{
+		Email: req.Email,
+		PasswordHash: hashedPassword,
+		Name: req.Name,
+		Provider: "local",
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
+
+	query := `
+		INSERT INTO users (email, password_hash, name, provider, created_at, updated_at)
+		VALUES ($1, $2, $3, $4, $5, $6)
+		RETURNING id
+	`
+
+	err = db.QueryRow(query, user.Email, user.PasswordHash, user.Name, user.Provider, user.CreatedAt, user.UpdatedAt).Scan(&user.ID)
+	if err != nil {
+		http.Error(w, "Error creating user", http.StatusInternalServerError)
+		return
+	}
 }
 
 
