@@ -6,10 +6,13 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/mylordkaz/MsgoChat/services/user-service/internal/auth"
+	"github.com/mylordkaz/MsgoChat/services/user-service/internal/database"
 	"github.com/mylordkaz/MsgoChat/services/user-service/internal/routes"
 )
 
 func main () {
+	database.ConnectDB()
+	
 	router := mux.NewRouter()
 
 	routes.UserRoutes(router)
