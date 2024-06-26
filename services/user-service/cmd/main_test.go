@@ -12,7 +12,7 @@ import (
 
 func TestHandlerUser(t *testing.T){
 	router := mux.NewRouter()
-	routes.RegisterRoutes(router)
+	routes.UserRoutes(router)
 	router.HandleFunc("/", handleUser)
 
 	req, err := http.NewRequest("GET", "/", nil)
