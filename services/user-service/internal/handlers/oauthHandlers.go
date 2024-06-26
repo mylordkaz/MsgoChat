@@ -62,7 +62,32 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request){
 }
 
 func LoginHandler(w http.ResponseWriter, r *http.Request){
-	
+	var req LoginRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Invalid request", http.StatusBadRequest)
+		return
+	}
+
+	var user models.User
+	query := `SELECT id, email, password_hash, name, provider, FROM users WHERE email = $1`
+	err := db.QueryRow(query, req.Email).Scan(&user.ID, &user.Email, &user.PasswordHash, &user.Name, &user.Provider)
+	if err != nil {
+		if err == sql.ErrNoRows{
+			http.Error(w, "Invalid email or password", http.StatusUnauthorized)
+		} else {
+			http.Error(w, "Error retriving user", http.StatusInternalServerError)
+		}
+		return 
+	}
+
+	if !hash.CheckPasswordHash(req.Password, user.PasswordHash){
+		http.Error(w, "Invalid email or password", http.StatusUnauthorized)
+		return
+	}
+
+	w.Header().Set("content-tye", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(user)
 }
 
 
