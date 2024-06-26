@@ -9,6 +9,7 @@ import (
 
 	"github.com/markbates/goth/gothic"
 	"github.com/mylordkaz/MsgoChat/services/user-service/internal/models"
+	"github.com/mylordkaz/MsgoChat/services/user-service/pkg/hash"
 )
 
 type RegisterRequest struct{
@@ -28,7 +29,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request){
 		return
 	}
 
-	hashedPassword, err := utils.hashedPassword(req.Password)
+	hashedPassword, err := hash.HashPassword(req.Password)
 	if err != nil {
 		http.Error(w, "Error hashing password", http.StatusInternalServerError)
 		return
@@ -58,6 +59,10 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request){
 	w.Header().Set("content-type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(user)
+}
+
+func LoginHandler(w http.ResponseWriter, r *http.Request){
+	
 }
 
 
