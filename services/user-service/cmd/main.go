@@ -11,7 +11,7 @@ import (
 func main () {
 	router := mux.NewRouter()
 
-	routes.RegisterRoutes(router)
+	routes.UserRoutes(router)
 
 	router.HandleFunc("/", handleUser)
 
