@@ -54,6 +54,10 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request){
 		http.Error(w, "Error creating user", http.StatusInternalServerError)
 		return
 	}
+
+	w.Header().Set("content-type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(user)
 }
 
 
