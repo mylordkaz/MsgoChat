@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/mylordkaz/MsgoChat/services/user-service/internal/auth"
 	"github.com/mylordkaz/MsgoChat/services/user-service/internal/routes"
 )
 
@@ -12,6 +13,8 @@ func main () {
 	router := mux.NewRouter()
 
 	routes.UserRoutes(router)
+	routes.AuthRoutes(router)
+	auth.NewAuth(router)
 
 	router.HandleFunc("/", handleUser)
 

@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
 	"github.com/joho/godotenv"
 	"github.com/markbates/goth"
@@ -17,7 +18,7 @@ const (
 	IsProd = false  // set to true when https 
 )
 
-func NewAuth(){
+func NewAuth(router *mux.Router){
 	err := godotenv.Load("../.env")
 	if err != nil {
 		log.Fatal("Error Loading .env file")
