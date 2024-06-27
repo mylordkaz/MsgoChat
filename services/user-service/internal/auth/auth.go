@@ -10,6 +10,7 @@ import (
 	"github.com/markbates/goth"
 	"github.com/markbates/goth/gothic"
 	"github.com/markbates/goth/providers/google"
+	// "github.com/markbates/goth/providers/github"
 )
 
 const (
@@ -26,6 +27,8 @@ func NewAuth(router *mux.Router){
 
 	googleClientID := os.Getenv("GOOGLE_CLIENT_ID")
 	googleClientSecret := os.Getenv("GOOGLE_CLIENT_SECRET")
+	// githubClientID := os.Getenv("GITHUB_CLIENT_ID")
+	// githubClientSecret := os.Getenv("GITHUB_CLIENT_SECRET")
 
 	store := sessions.NewCookieStore([]byte(key))
 	store.MaxAge(MaxAge)
@@ -37,5 +40,6 @@ func NewAuth(router *mux.Router){
 
 	goth.UseProviders(
 		google.New(googleClientID, googleClientSecret, "http://localhost:3000/auth/google/callback"),
+		//github.New(githubClientID, githubClientSecret, "http://localhost:3000/auth/github/callback"),
 	)
 }
