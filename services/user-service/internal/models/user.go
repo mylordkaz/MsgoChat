@@ -6,7 +6,8 @@ type User struct {
 	ID            int64
     Email         string
     PasswordHash  string
-    GoogleID      *string // Pointer to handle null values
+    GoogleID      *string  // Pointer to handle null values
+    GithubID      *string  // Pointer to handle null values
     Name          string
     AvatarURL     *string
     Provider      string // example = "google" or "local"
