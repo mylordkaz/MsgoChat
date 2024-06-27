@@ -102,7 +102,7 @@ func CallbackHandler(w http.ResponseWriter, r *http.Request){
 		return
 	}
 	var user models.User
-	query := `SELECT id, email, name, provider FROM users WHERE google_id = $1`
+	query := `SELECT id, email, name, provider FROM users WHERE google_id = $1 OR github_id = $1`
 	err = db.QueryRow(query, gothUser.UserID).Scan(&user.ID, &user.Email, &user.Name, &user.Provider)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -111,18 +111,25 @@ func CallbackHandler(w http.ResponseWriter, r *http.Request){
                 GoogleID:    &gothUser.UserID,
                 Name:        gothUser.Name,
                 AvatarURL:   &gothUser.AvatarURL,
-                Provider:    "google",
+                Provider:    gothUser.Provider,
                 AccessToken: &gothUser.AccessToken,
                 RefreshToken: &gothUser.RefreshToken,
                 TokenExpiry: &gothUser.ExpiresAt,
                 CreatedAt:   time.Now(),
                 UpdatedAt:   time.Now(),
 			}
-			query = `INSERT INTO users (email, google_id, name, avatar_url, provider, access_token, refresh_token, token_expiry, created_at, updated_at)
-			VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+
+			if gothUser.Provider == "google"{
+				user.GoogleID = &gothUser.UserID
+			} else if gothUser.Provider == "github"{
+				user.GithubID = &gothUser.UserID
+			}
+
+			query = `INSERT INTO users (email, google_id, github_id, name, avatar_url, provider, access_token, refresh_token, token_expiry, created_at, updated_at)
+			VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
 			RETURNING id
 			`
-			err = db.QueryRow(query,user.Email, user.GoogleID, user.Name, user.AvatarURL, user.Provider, user.AccessToken, user.RefreshToken, user.TokenExpiry, user.CreatedAt, user.UpdatedAt).Scan(&user.ID)
+			err = db.QueryRow(query,user.Email, user.GoogleID, user.GithubID, user.Name, user.AvatarURL, user.Provider, user.AccessToken, user.RefreshToken, user.TokenExpiry, user.CreatedAt, user.UpdatedAt).Scan(&user.ID)
 			if err != nil {
 				http.Error(w, "Error saing user", http.StatusInternalServerError)
 				return
