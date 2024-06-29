@@ -10,6 +10,7 @@ import (
 	"github.com/markbates/goth/gothic"
 	"github.com/mylordkaz/MsgoChat/services/user-service/internal/models"
 	"github.com/mylordkaz/MsgoChat/services/user-service/pkg/hash"
+	"github.com/mylordkaz/MsgoChat/services/user-service/pkg/jwt"
 )
 
 type RegisterRequest struct{
@@ -55,6 +56,22 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request){
 		http.Error(w, "Error creating user", http.StatusInternalServerError)
 		return
 	}
+
+	token, err := jwt.GenerateJWT(user.ID, user.Email)
+	if err != nil {
+		http.Error(w, "Error generating token", http.StatusInternalServerError)
+		return
+	}
+	
+	expirationTime := time.Now().Add(24 * time.Hour)
+	http.SetCookie(w, &http.Cookie{
+		Name: "Token",
+		Value: token,
+		Expires: expirationTime,
+		HttpOnly: true,
+		Secure: true,
+		Path: "/",
+	})
 
 	w.Header().Set("content-type", "application/json")
 	w.WriteHeader(http.StatusCreated)
