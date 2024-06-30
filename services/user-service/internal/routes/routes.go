@@ -17,4 +17,5 @@ func AuthRoutes(router *mux.Router){
 	router.HandleFunc("/logout", handlers.LogoutHandler)
 	router.HandleFunc("/auth/{provider}/callback", handlers.CallbackHandler)
 	router.HandleFunc("/auth/{provider}", handlers.AuthHandlers)
+	router.HandleFunc("/dashboard", handlers.DashboardHandler).Methods("GET")
 }
