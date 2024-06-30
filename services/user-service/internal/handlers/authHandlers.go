@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"time"
 
@@ -59,6 +60,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request){
 
 	token, err := jwt.GenerateJWT(user.ID, user.Email)
 	if err != nil {
+		log.Println("Error generating token:", err)
 		http.Error(w, "Error generating token", http.StatusInternalServerError)
 		return
 	}
@@ -69,14 +71,14 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request){
 		Value: token,
 		Expires: expirationTime,
 		HttpOnly: true,
-		Secure: true,
+		Secure: false, // use true in prod
 		Path: "/",
 	})
 
-	w.Header().Set("content-type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(user)
 	http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
+	// w.Header().Set("content-type", "application/json")
+	// w.WriteHeader(http.StatusCreated)
+	// json.NewEncoder(w).Encode(user)
 }
 
 func LoginHandler(w http.ResponseWriter, r *http.Request){
@@ -87,7 +89,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request){
 	}
 
 	var user models.User
-	query := `SELECT id, email, password_hash, name, provider, FROM users WHERE email = $1`
+	query := `SELECT id, email, password_hash, name, provider FROM users WHERE email = $1`
 	err := db.QueryRow(query, req.Email).Scan(&user.ID, &user.Email, &user.PasswordHash, &user.Name, &user.Provider)
 	if err != nil {
 		if err == sql.ErrNoRows{
@@ -114,14 +116,14 @@ func LoginHandler(w http.ResponseWriter, r *http.Request){
 		Value: token,
 		Expires: expirationTime,
 		HttpOnly: true,
-		Secure: true,
+		Secure: false, // true in prod
 		Path: "/",
 	})
 
-	w.Header().Set("content-tye", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(user)
 	http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
+	// w.Header().Set("content-type", "application/json")
+	// w.WriteHeader(http.StatusOK)
+	// json.NewEncoder(w).Encode(user)
 }
 
 
@@ -186,12 +188,12 @@ func CallbackHandler(w http.ResponseWriter, r *http.Request){
 		Value: token,
 		Expires: expirationTime,
 		HttpOnly: true,
-		Secure: true,
+		Secure: false, // true in prod
 		Path: "/",
 	})
 
-	fmt.Fprintf(w, "User: %v", user)
 	http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
+	fmt.Fprintf(w, "User: %v", user)
 }
 
 func LogoutHandler(w http.ResponseWriter, r *http.Request){
