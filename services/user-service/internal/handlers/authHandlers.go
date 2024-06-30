@@ -102,10 +102,26 @@ func LoginHandler(w http.ResponseWriter, r *http.Request){
 		http.Error(w, "Invalid email or password", http.StatusUnauthorized)
 		return
 	}
+	token, err := jwt.GenerateJWT(user.ID, user.Email)
+	if err != nil {
+		http.Error(w, "Error generating token", http.StatusInternalServerError)
+		return
+	}
+	
+	expirationTime := time.Now().Add(24 * time.Hour)
+	http.SetCookie(w, &http.Cookie{
+		Name: "Token",
+		Value: token,
+		Expires: expirationTime,
+		HttpOnly: true,
+		Secure: true,
+		Path: "/",
+	})
 
 	w.Header().Set("content-tye", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(user)
+	http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
 }
 
 
@@ -157,7 +173,25 @@ func CallbackHandler(w http.ResponseWriter, r *http.Request){
 			return
 		}
 	}
+
+	token, err := jwt.GenerateJWT(user.ID, user.Email)
+	if err != nil {
+		http.Error(w, "Error generating token", http.StatusInternalServerError)
+		return
+	}
+	
+	expirationTime := time.Now().Add(24 * time.Hour)
+	http.SetCookie(w, &http.Cookie{
+		Name: "Token",
+		Value: token,
+		Expires: expirationTime,
+		HttpOnly: true,
+		Secure: true,
+		Path: "/",
+	})
+
 	fmt.Fprintf(w, "User: %v", user)
+	http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
 }
 
 func LogoutHandler(w http.ResponseWriter, r *http.Request){
