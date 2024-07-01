@@ -1,29 +1,13 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 
-	"github.com/mylordkaz/MsgoChat/services/user-service/pkg/jwt"
+	"github.com/mylordkaz/MsgoChat/services/user-service/contextkeys"
 )
 
-func DashboardHandler(w http.ResponseWriter, r *http.Request){
-	cookie, err := r.Cookie("Token")
-	if err != nil {
-		if err == http.ErrNoCookie {
-			http.Error(w, "Unauthorized", http.StatusUnauthorized)
-			return
-		}
-		http.Error(w, "Bad request", http.StatusBadRequest)
-		return
-	}
-
-	token := cookie.Value
-
-	claims, err := jwt.VerifyJWT(token)
-	if err != nil {
-		http.Error(w, "Invalid token", http.StatusUnauthorized)
-		return
-	}
-
-	w.Write([]byte("Welcome to the Dashboard, " + claims.Email + "!"))
+func DashboardHandler(w http.ResponseWriter, r *http.Request) {
+    email := r.Context().Value(contextkeys.UserContextKey).(string)
+    w.Write([]byte(fmt.Sprintf("Welcome to the Dashboard, %s!", email)))
 }

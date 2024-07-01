@@ -3,6 +3,8 @@ package middleware
 import (
 	"context"
 	"net/http"
+
+	"github.com/mylordkaz/MsgoChat/services/user-service/contextkeys"
 	"github.com/mylordkaz/MsgoChat/services/user-service/pkg/jwt"
 )
 type ContextKey string
@@ -23,7 +25,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 		}
 
 		// store user email in context
-		ctx := context.WithValue(r.Context(), UserContextKey, claims.Email)
-		next.ServeHTTP(w, r.WithContext(ctx))
+		ctx := context.WithValue(r.Context(), contextkeys.UserContextKey, claims.Email)
+        next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
