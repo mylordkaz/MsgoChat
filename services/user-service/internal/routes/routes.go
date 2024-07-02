@@ -1,8 +1,11 @@
 package routes
 
 import (
+	"net/http"
+
 	"github.com/gorilla/mux"
 	"github.com/mylordkaz/MsgoChat/services/user-service/internal/handlers"
+	"github.com/mylordkaz/MsgoChat/services/user-service/internal/middleware"
 )
 
 func UserRoutes(router *mux.Router){
@@ -17,5 +20,5 @@ func AuthRoutes(router *mux.Router){
 	router.HandleFunc("/logout", handlers.LogoutHandler)
 	router.HandleFunc("/auth/{provider}/callback", handlers.CallbackHandler)
 	router.HandleFunc("/auth/{provider}", handlers.AuthHandlers)
-	router.HandleFunc("/dashboard", handlers.DashboardHandler).Methods("GET")
+	router.Handle("/dashboard", middleware.AuthMiddleware(http.HandlerFunc(handlers.DashboardHandler))).Methods("GET")
 }
