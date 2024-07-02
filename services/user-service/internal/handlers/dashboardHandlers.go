@@ -8,6 +8,10 @@ import (
 )
 
 func DashboardHandler(w http.ResponseWriter, r *http.Request) {
-    email := r.Context().Value(contextkeys.UserContextKey).(string)
+    email, ok := r.Context().Value(contextkeys.UserContextKey).(string)
+	if !ok {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
     w.Write([]byte(fmt.Sprintf("Welcome to the Dashboard, %s!", email)))
 }
