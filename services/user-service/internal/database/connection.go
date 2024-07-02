@@ -37,5 +37,4 @@ func ConnectDB() *sql.DB {
 
     log.Println("Successfully connected to database")
     return db
-
 }
