@@ -7,9 +7,6 @@ import (
 	"github.com/mylordkaz/MsgoChat/services/user-service/contextkeys"
 	"github.com/mylordkaz/MsgoChat/services/user-service/pkg/jwt"
 )
-type ContextKey string
-
-const UserContextKey ContextKey = "userEmail"
 
 func AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request)  {
