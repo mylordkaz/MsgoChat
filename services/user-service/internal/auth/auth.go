@@ -39,7 +39,7 @@ func NewAuth(router *mux.Router){
 	gothic.Store = store
 
 	goth.UseProviders(
-		google.New(googleClientID, googleClientSecret, "http://localhost:3000/auth/google/callback"),
+		google.New(googleClientID, googleClientSecret, "http://localhost:8080/auth/google/callback"),
 		//github.New(githubClientID, githubClientSecret, "http://localhost:3000/auth/github/callback"),
 	)
 }
