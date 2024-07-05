@@ -19,7 +19,7 @@ func main () {
 	routes.AuthRoutes(router)
 	auth.NewAuth(router)
 
-	router.HandleFunc("/", handleUser)
+	router.HandleFunc("/", HandleUser)
 
 	fmt.Println("Starting server at port 8080")
 	if err := http.ListenAndServe(":8080", router); err != nil {
@@ -27,6 +27,6 @@ func main () {
 	}
 }
 
-func handleUser(w http.ResponseWriter, r *http.Request) {
+func HandleUser(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, "Hello, you've reached the user service")
 }
