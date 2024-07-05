@@ -1,19 +1,20 @@
-package main
+package main_test
 
 import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
-
 	"github.com/gorilla/mux"
 	"github.com/mylordkaz/MsgoChat/services/user-service/internal/routes"
+	"github.com/mylordkaz/MsgoChat/services/user-service/cmd"
+	
 )
 
 
 func TestHandlerUser(t *testing.T){
 	router := mux.NewRouter()
 	routes.UserRoutes(router)
-	router.HandleFunc("/", handleUser)
+	//router.HandleFunc("/", HandleUser)
 
 	req, err := http.NewRequest("GET", "/", nil)
 	if err != nil{
