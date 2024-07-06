@@ -1,4 +1,4 @@
-package handlers
+package test
 
 import (
 	"bytes"
@@ -6,13 +6,14 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/gorilla/mux"
-	"github.com/mylordkaz/MsgoChat/services/user-service/internal/models"
-	"github.com/stretchr/testify/assert"
-) 
+    "github.com/gorilla/mux"
+    "github.com/stretchr/testify/assert"
+    "github.com/mylordkaz/MsgoChat/services/user-service/internal/handlers"
+    "github.com/mylordkaz/MsgoChat/services/user-service/internal/models"
 
-
+)
 func TestCreateUser(t *testing.T){
 	mockDB, mock, err := sqlmock.New()
 	if err != nil {
@@ -22,7 +23,7 @@ func TestCreateUser(t *testing.T){
 
 	db = mockDB
 	router := mux.NewRouter()
-	router.HandleFunc("/users", CreateUser).Methods("POST")
+	router.HandleFunc("/users", handlers.CreateUser).Methods("POST")
 
 	user := models.User{Name: "jeanToad", Email: "jeanToad@gmail.com", PasswordHash: "JeanToad123@"}
 	userJSON, _ := json.Marshal(user)
@@ -48,7 +49,7 @@ func TestGetUser(t *testing.T) {
     db = mockDB 
 
     router := mux.NewRouter()
-    router.HandleFunc("/users/{id}", GetUser).Methods("GET")
+    router.HandleFunc("/users/{id}", handlers.GetUser).Methods("GET")
 
 	accessToken := "access-token"
     user := models.User{
@@ -88,7 +89,7 @@ func TestUpdateUser(t *testing.T){
     db = mockDB 
 
     router := mux.NewRouter()
-    router.HandleFunc("/users/{id}", UpdateUser).Methods("PUT")
+    router.HandleFunc("/users/{id}", handlers.UpdateUser).Methods("PUT")
 
 	updatedUser := models.User{
 		Name: "updatedName",
