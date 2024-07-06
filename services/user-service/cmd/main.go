@@ -7,6 +7,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/mylordkaz/MsgoChat/services/user-service/internal/auth"
 	"github.com/mylordkaz/MsgoChat/services/user-service/internal/database"
+	"github.com/mylordkaz/MsgoChat/services/user-service/internal/handlers"
 	"github.com/mylordkaz/MsgoChat/services/user-service/internal/routes"
 )
 
@@ -19,14 +20,10 @@ func main () {
 	routes.AuthRoutes(router)
 	auth.NewAuth(router)
 
-	router.HandleFunc("/", HandleUser)
+	router.HandleFunc("/", handlers.HandleUser)
 
 	fmt.Println("Starting server at port 8080")
 	if err := http.ListenAndServe(":8080", router); err != nil {
 		fmt.Printf("Error starting server: %v", err)
 	}
-}
-
-func HandleUser(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "Hello, you've reached the user service")
 }
