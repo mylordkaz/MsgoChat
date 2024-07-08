@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/mylordkaz/MsgoChat/services/auth-service/internal/config"
+	"github.com/mylordkaz/MsgoChat/services/auth-service/pkg/database"
 )
 
 func main(){
@@ -12,9 +13,13 @@ func main(){
 	if err != nil {
 		log.Fatalf("Failed to load config: %v", err)
 	}
-	
-	// Initialsize database
 
+	// Initialsize database
+	db, err := database.Newdatabase(cfg.DatabaseURL)
+	if err != nil {
+		log.Fatalf("Failed to initialize database: %v", err)
+	}
+	defer db.Close()
 	// Initialize router
 
 	// Initialize handlers
