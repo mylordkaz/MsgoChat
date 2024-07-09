@@ -20,6 +20,7 @@ func main(){
 		log.Fatalf("Failed to initialize database: %v", err)
 	}
 	defer db.Close()
+	
 	// Initialize router
 
 	// Initialize handlers
