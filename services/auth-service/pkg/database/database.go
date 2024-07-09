@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 	"time"
+
+	"github.com/mylordkaz/MsgoChat/services/auth-service/internal/models"
 )
 
 
@@ -32,4 +34,17 @@ func Newdatabase(connectionStr string) (*Database, error) {
 
 func (d *Database) Close() error {
 	return d.DB.Close()
+}
+
+func (d *Database) CreateUser(user *models.User) error {
+	query := `
+		INSERT INTO users (username, password, email)
+		VALUES ($1, $2, $3)
+		RETURNING id
+	`
+	err := d.QueryRow(query, user.Username, user.Password, user.Email).Scan(&user.ID)
+	if err != nil {
+		return fmt.Errorf("error creating user: %w", err)
+	}
+	return nil
 }
