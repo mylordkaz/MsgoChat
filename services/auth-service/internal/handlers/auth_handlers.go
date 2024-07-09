@@ -32,7 +32,7 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request){
 	user.Password = string(hashedPassword)
 
 	// save user to db
-	if err := h.db.createUser(&user); err != nil {
+	if err := h.db.CreateUser(&user); err != nil {
 		http.Error(w, "Error creating user", http.StatusInternalServerError)
 		return
 	}
