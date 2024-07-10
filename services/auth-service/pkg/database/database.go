@@ -65,3 +65,20 @@ func (d *Database) GetUserByUsername(username string) (*models.User, error) {
 	}
 	return user, nil
 }
+
+func (d *Database) GetUserByID(id int) (*models.User, error){
+	query := `
+		SELECT id, username, password, email
+		FROM users
+		WHERE username = $1
+	`
+	user := &models.User{}
+	err := d.QueryRow(query, id).Scan(&user.ID, &user.Username, &user.Password, &user.Email)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, fmt.Errorf("user not found")
+		}
+		return nil, fmt.Errorf("erro fetching user: %w", err)
+	}
+	return user, nil
+}
