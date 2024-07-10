@@ -6,7 +6,7 @@ import (
 
 	"github.com/mylordkaz/MsgoChat/services/auth-service/internal/models"
 	"github.com/mylordkaz/MsgoChat/services/auth-service/pkg/database"
-	"github.com/mylordkaz/MsgoChat/services/auth-service/pkg/hash"
+	"github.com/mylordkaz/MsgoChat/services/auth-service/pkg/utils/hash"
 )
 
 type AuthHandler struct {
