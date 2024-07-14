@@ -48,8 +48,18 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request){
         return
     }
 
-	
-	json.NewEncoder(w).Encode(map[string]string{"token": token})
+	response := struct {
+		Token 		string 	`json:"token"`
+		TokenType 	string 	`json:"token_type"`
+		ExpiresIn	int64	`json:"expires_in"`
+	}{
+		Token: token,
+		TokenType: "Bearer",
+		ExpiresIn: 24 * 60 * 60,
+	}
+
+	w.Header().Set("Content-Type", "application/json")	
+	json.NewEncoder(w).Encode(response)
 }
 
 
