@@ -29,10 +29,30 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request){
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
-	
 
+	// generate token for newly registred user
+	token, err := h.authService.LoginUser(user.Username, user.Password)
+	if err != nil {
+		http.Error(w, "Error logging in after registration", http.StatusInternalServerError)
+		return
+	}
+
+	response := struct {
+		Message 	string `json:"message"`
+		Token 		string 	`json:"token"`
+		TokenType 	string 	`json:"token_type"`
+		ExpiresIn	int64	`json:"expires_in"`
+	}{
+		Message: "User registered successfully",
+		Token: token,
+		TokenType: "Bearer",
+		ExpiresIn: 24 * 60 * 60,
+	}
+
+	
+	w.Header().Set("content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(map[string]string{"message": "User registered successfully"})
+	json.NewEncoder(w).Encode(response)
 }
 
 func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request){
