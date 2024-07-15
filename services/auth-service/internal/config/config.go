@@ -13,6 +13,11 @@ type Config struct {
 	JWTSecret			string
 	JWTExpiryHours		int
 	Environment			string
+	GoogleClientID		string
+	GoogleClientSecret	string
+	GitHubClientID		string
+	GitHubClientSecret	string
+	ServerURL			string // for callbacks
 }
 
 func Load() (*Config, error){
@@ -25,6 +30,10 @@ func Load() (*Config, error){
 		JWTSecret: getEnv("JWT_SECRET", ""),
 		JWTExpiryHours: getEnvAsInt("JWT_EXPIRY_HOURS", 24),
 		Environment: getEnv("ENVIRONMENT", "development"),
+		GoogleClientID: getEnv("GOOGLE_CLIENT_ID", ""),
+		GoogleClientSecret: getEnv("GOOGLE_CLIENT_SECRET", ""),
+		GitHubClientID: getEnv("GITHUB_CLIENT_ID", ""),
+		GitHubClientSecret: getEnv("GITHUB_CLIENT_SECRET", ""),
 	}
 	return config, nil
 }
