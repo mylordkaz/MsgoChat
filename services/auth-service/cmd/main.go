@@ -26,6 +26,9 @@ func main(){
 	}
 	defer db.Close()
 
+	// Initialize router
+	r := mux.NewRouter()
+
 	// Initialize repository
 	authRepo := repository.NewAuthRepository(db.DB)
 
@@ -35,8 +38,8 @@ func main(){
 	// Initialize handlers
 	authHandler := handlers.NewAuthHandler(authService)
 
-	// Initialize router
-	r := mux.NewRouter()
+	// Initialize OAuth
+	handlers.InitializeOAuth(r, cfg, authService)
 
 	// Setup routes
 	r.HandleFunc("/register", authHandler.Register).Methods("POST")
