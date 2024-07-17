@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 
@@ -20,6 +21,21 @@ func InitializeOAuth(router *mux.Router, cfg *config.Config, authService *servic
 	)
 
 	router.HandleFunc("/auth/{provider}", func(w http.ResponseWriter, r *http.Request) {
-		gothic.BeginAuthHandler(w, rs)
+		gothic.BeginAuthHandler(w, r)
+	})
+
+	router.HandleFunc("/auth/{provider}/callback", func(w http.ResponseWriter, r *http.Request) {
+		user, err := gothic.CompleteUserAuth(w, r)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		token, err := authService.LoginOrRegisterOAuthUser(user)
+		if err != nil {
+			http.Error(w, "Failed to authenticate user", http.StatusInternalServerError)
+			return
+		}
+		json.NewEncoder(w).Encode(map[string]string{"token": token})
 	})
 }
