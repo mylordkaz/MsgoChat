@@ -93,3 +93,16 @@ func (r *AuthRepository) GetUserByProviderId(provider, providerID string) (*mode
     }
     return user, nil
 }
+
+func (r *AuthRepository) UpdateUserOAuthInfo(user *models.User) error {
+	query := `
+		UPDATE users
+		SET google_id = $1, github_id = $2
+		WHERE id = $3
+	`
+	_, err := r.db.Exec(query, user.GoogleID, user.GithubID, user.ID)
+	if err != nil {
+		return fmt.Errorf("error updating user OAuth info: %w", err)
+	}
+	return nil
+}
