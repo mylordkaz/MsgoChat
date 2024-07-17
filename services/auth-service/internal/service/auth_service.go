@@ -34,7 +34,7 @@ func (s *AuthService) LoginUser(username, password string) (string, error) {
     if err != nil {
         return "", err
     }
-	
+
 	if user.Provider != "local" {
         return "", errors.New("this account uses OAuth, please login with the appropriate provider")
     }
@@ -73,7 +73,28 @@ func (s *AuthService) LoginOrRegisterOAuthUser(gothUser goth.User) (string, erro
 			}
 			user = newUser
 		} else {
-			return "", fmt.Errorf("email already in use with another account")
+			switch gothUser.Provider {
+			case "google":
+				if user.GoogleID != "" {
+					return "", fmt.Errorf("this Google account is already linked to another user")
+				}
+				user.GoogleID = gothUser.UserID
+			case "github":
+				if user.GithubID != "" {
+					return "", fmt.Errorf("this Github account is already linked to another user")
+				}
+				user.GithubID = gothUser.UserID
+			default:
+				return "", fmt.Errorf("unsupported OAuth provider")
+			}
+
+			err = s.repo.UpdateUserOAuthInfo(user)
+        if err != nil {
+            return "", fmt.Errorf("failed to link OAuth provider: %w", err)
+        }
+
+
+			
 		}
 	}
 	return jwt.GenerateToken(user.ID, 24*time.Hour)
