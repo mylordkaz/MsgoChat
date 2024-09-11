@@ -10,7 +10,7 @@ type User struct {
     GithubID      *string  // Pointer to handle null values
     Name          string
     AvatarURL     *string
-    Provider      string // example = "google" or "local"
+    Provider      string    // example = "google" or "local"
     AccessToken   *string
     RefreshToken  *string
     TokenExpiry   *time.Time
